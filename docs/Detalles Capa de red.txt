@@ -1,0 +1,22 @@
+Detalles de implementacion en la capa de red:
+
+. Se agregaron dentro de la clase host, dos campos:
+   	1. table_arp: un diccionario ip:mac para mantener en conocimiento los dispositivos para la transmisión y saber cuando es necesario realizar una Solicitud ARP.
+   	2. ip_packets_pendientes: un diccionario ip: lista de ip_packets donde se almacenan los paquetes que están pendientes de una respuesta ARP para poder ser enviados.
+   	
+. Se agregó una clase ip_packet para encapsular los mismos y brindar las funcionalidades necesarias.
+
+Funcionamiento:
+ -Cuando un host se recibe una orden de envío de un paquete ip, se busca en la tabla arp para determinar si se conoce o no la mac asociada a dicha ip. En caso de no tenerla se conforma una solicitud ARP que es enviada y se coloca ese paquete ip en la lista de pendientes correspondiente
+ a esa ip.
+ -Cuando un host recibe completamente una trama, determina si es una solicitud ARP(ARPQ), o una respuesta(ARPR), o ninguna de las dos.
+   . Si es una ARPQ, envía una ARPR con su mac
+   . Si es una ARPR, guarda la mac de la ip correspondiente en la tabla arp y da la orden de envío de todos los paquetes_ip pendientes asociados a esa ip y los borra de los pendietes.
+   
+  . Cuando se tiene un ip_packet se determina se determina si es ICMP y su tipo y en consecuencia se da la respuesta.
+  
+  . Para implementar la espera de 100ms entre cada ping se utilizó una lista con donde se llevan contadores de cuantos bits faltan para hacer una pausa de 100ms en la transmision, con cada bit enviado disminuyen los contadores, cuando el primero llega a 0, se hace la espera, llevando otro contador que mide ms a ms de la ejecución el paso de los 100ms
+   
+
+
+

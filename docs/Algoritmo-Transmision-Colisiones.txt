@@ -1,0 +1,40 @@
+
+
+Algoritmo inicial
+
+1. leer todas las instrucciones
+2. obtener las configuraciones
+3. crear la red
+4. mientras haya instrucciones o datos para enviar:
+5.     tomar las instrucciones que ocurren en el ms
+6.     ordenarlas por orden de:
+		1.create
+		2.mac
+		3.connect-disconnet según aparecen
+		3.send - send_frame según aparecen
+7.         por cada instruccion del ms:
+8.              red recibe instruccion y la maneja
+9.	por cada ms     
+10.		red lleva a cabo algoritmo de transmisión
+11.    si no quedan instrucciones y han pasado 10ms
+12.         si no quedan dispositivos pendientes
+13.             final       
+
+Algoritmo de transmisión:
+
+1. cada host en disposicion de transmitir
+	transmite su bit
+2. por cada switch
+3. 	por cada puerto con data que tranmitir
+		transmite su bit
+4. por cada dispositvo en la red
+ 	comprueba los estados de la tranmisión
+ 	
+La transmisión se realiza por cada ms partiendo de un recorrido bfs por el grafo, como no tenemos ciclos(lo controlamos), cada componente conexa de la red será un árbol.
+En la transmisión se elige cada host(o puerto de switch) en disposición de transmitir como raíz y se va tranmitiendo el bit de ese ms a cada uno de los dispositivo conexos a él. Si se llega a otro host, se para el recorrido en esa rama(representaría una hoja), si se llega a un switch se para el recorrido en esa rama(los switch hacen un búffer, con lo cual no están retrasmitiendo el bit que les llegó.
+Luego, cada dispositivo, por cada puerto en su canal de lectura va a ir creando un búffer parcial de lo recibido en ese puerto en ese ms.
+Durante la comprobación, revisan su canal de lectura, si hay recibos, se hace un XOR entre todos los bits y se toma el resultado como el bit recibido en ese ms( vendría a ser el hecho de una transmisión instantánea de todos esos bits por el cable en el mismo ms).
+
+Detectar colisión:
+En el caso del host, si tiene se encuentra transmitiendo y en su canal de lectura recibe más de 2 bits significa que existen al menos otros 2 dispositivos transmitiendo en ese ms en la red, con lo cual reconoce una colisión en ese envío en ese ms.
+Determina un random (t) de espera para volver a intentar transmitir en el ms: actual + t  

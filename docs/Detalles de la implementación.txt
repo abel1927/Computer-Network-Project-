@@ -1,0 +1,36 @@
+
+El proyecto se implementó siguiendo la idea de simular el comportamiento lo más parecido posible al funcionamiento real dentro de la capa física de una red según nuestro entendimiento.
+
+La red se representa como un grafo, las aristas simulan los cables.
+
+Detalles de implementación:
+   Host:
+   - Reciben las ordenes de envío y controlan su propio funcionamiento.
+   -Protocolo: Si un host esta transmitiendo y detecta una colisión, para su estado de transmisión manteniendo en pendiente el bit que estaba transmitiendo y establece un random para el próximo momento en que intentará transmitir.
+     . mientras se encuentra en proceso ¨colisionado¨, contiúa la lectura de bits y sus reportes.
+     . si cuando vuelve a intentar enviar colisiona nuevamente, pues aumentará en 1 el contador de colisiones.
+     . si el contador de colisiones llega a un máximo de 15 pre-establecido, pues se perderá su envío, se cancela su transmisión hasta la próxima entrada de nuevos datos.
+     . cuando un host reinicia su transmisión, empieza por la transmisión del bit que transmitía en el momento de la colisión.
+   -Si un host intenta enviar datos pero no está conectado a otro dispositivo, pues cae en un estado de ´reintento´. Cada ms intentará volver a transmitir. Si luego de 120000 intentos no lo logra, pierde la transmisión.
+   -El host reporta escritura en el primer ms del envío de un bit, por lo cual en una transmisión satisfactoria informa escritura cada signal_time ms.
+     . Si colisiona antes de cumplido el signal_time de un bit, se reporta colisión en ese ms.
+     . Cuando vuelve a enviar este bit, lo hará durante signal_time nuevamente(olvida el tiempo transmitido antes de colisionar o desconectarse)
+   - Un host reporta lectura cada signal_time ms o antes en caso de cambios en los datos
+   
+    Hubs:
+    - El hub funcionará como un centralizador, por tanto quedan como el potencial centro de colisiones.
+    - Si hay 2 dispositivos transmitiendo en el hub, este actuara entre ellos como un cable duplex
+      
+      
+     -Switch
+     . no transmiten hasta tener toda una trama en su buffer.
+     . por tanto, tendran un buffer de recibo en cada puerto
+     . los switch no colisionan y por tanto una vez comienzan a enviar una trama no se detienen.
+     
+    Red:
+    - La Red se encarga del manejo de la actividad ¨exterior¨ en el proceso.
+    - Se encarga de transmitir las órdenes de transmisión a los host.
+    - Simula los procesos de conectado y desconectado de calbes.
+      . Es la clase que controla los imposibles a nivel físico entre los dispositivos.
+     
+      

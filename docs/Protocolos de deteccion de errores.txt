@@ -1,0 +1,45 @@
+Se implementaron dos protocolos de detección de errores.
+
+1. CRC---: en config.txt: error_detection = crc
+
+La idea de este protocolo es interpretar la cadena de bits de datos y verificación como polinomios, donde los 1 representan los factores activos.
+Para la codificación y decodificación de los datos se utiliza un polinomio generador G(x) de grado r(r+1 bits) que conocen ambos host.
+Este protocolo permite determinar errores de 1 solo bit asi como errores de ráfaga según el grado del polinomio.
+Algoritmo de codificación:
+1. Se tienen los datos, llamemosle polinomio D(x) de m bits
+2. Se agregan r bits ceros a la derecha de D(x) de tal forma que se pueda dividir por G(x)
+3. Se divide D(x)/G(x), quedando r bits de resto: R(x)
+4. Se envía R(x) como bits de verificación, de tal forma que la cadena D(x)-union-R(x) es divisible por G(x).
+
+Algoritmo de decodificación:
+1. Se tienen los datos, D(x), y los bits de verificación R(x).
+2. Se divide D(x)-union-R(x)/G(x)
+3. Si el resto de la división es distinto de 0, hubo error en la transmisión, en caso contrario se considera una transmisión correcta
+
+En la implementación de nuestro protocolo uilizamos el polinomio generador de 16 bits estándar CCITT: x16 + x12 + x5 + 1. 
+
+
+
+2. Hamming: en config.txt: error_detection = hamming
+
+En este protocolo la cadena de bits de datos se le adicionan los llamados "bits de paridad" para poder comprobar si hay errores o no, “1” significa “impar”, y “0” significa “par”. Cada “bit de paridad” comprobará unos bits determinados, dependiendo de la posición que ocupe.
+Para la codificación y decodificación de los datos se utiliza esta algoritmo para codificar los datos y luego comprobar si los datos enviados son los mismos que los datos recibidos.
+
+Algoritmo de codificación:
+1. Se tienen los datos, calculamos la cantidad de bits de paridad que está determinado por la desigualdad 2^p ≥ n + p + 1, donde p es el número de bits de
+paridad y n es el número de bits de datos.
+2. Se se ubican las bit de paridad junto a los bit de datos, estos ocupan las posiciones que son las potencias de dos: 1, 2, 4, 8, 16...
+3. Contamos el número de unos asociados con cada bit de paridad, si la cantidad de uno es par, el bit correspondiete tomará valor 0 si no tomará valor 1.
+4. Luego de realizar el paso anterior para todos los bit se envía r como bits de verificación.
+
+Algoritmo de decodificación:
+1. Se tienen los datos, realizamos el algoritmo anterior para estos datos
+2. Con esta cadena de bit resultante y los bits de verificación se comprueban si en las posiciones que son potencias de dos hay algun cambio.
+3. Si es asi hubo error en la transmisión, en caso contrario se considera una transmisión correcta
+
+
+
+
+
+
+ 
