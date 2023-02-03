@@ -10,7 +10,7 @@ Authors:
  
 ##
 
-Project especifications: Orientaciones/
+Project specifications: Orientaciones/
 
 ##
 
